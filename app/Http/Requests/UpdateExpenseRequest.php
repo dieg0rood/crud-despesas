@@ -22,7 +22,10 @@ class UpdateExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'description' => 'required|string|max:191',
+            'expense_date' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0',
         ];
     }
 }

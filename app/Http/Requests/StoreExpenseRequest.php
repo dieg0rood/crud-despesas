@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreExpenseRequest extends FormRequest
@@ -11,7 +10,7 @@ class StoreExpenseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +21,9 @@ class StoreExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'description' => ['required', 'string', 'max:191'],
+            'expense_date' => ['required', 'date_format:d-m-Y'],
+            'amount' => ['required', 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'min:0'],
         ];
     }
 }

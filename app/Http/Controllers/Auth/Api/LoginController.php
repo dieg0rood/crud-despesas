@@ -15,12 +15,18 @@ class LoginController extends Controller
         if (!auth()->attempt($credentials))
             abort(401, 'Invalid Credentials');
 
-        $token = auth()->user()->createAccessToken();
+        $token = auth()->user()->createToken('auth_token');
 
         return response()->json([
             'data' => [
                 'token' => $token->plainTextToken
             ]
         ]);
+    }
+
+    public function logout()
+    {
+        auth()->user()->currentAccessToken()->delete();
+        return response()->json([], 204);
     }
 }
