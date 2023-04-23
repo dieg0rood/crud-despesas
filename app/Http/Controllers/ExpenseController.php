@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Expense\CannotFoundExpenseException;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Models\Expense;
@@ -23,6 +24,7 @@ class ExpenseController extends Controller
      */
     public function index(Authenticatable $user): JsonResponse
     {
+        throw new CannotFoundExpenseException($user);
         $expenses = $this->service->index($user, $this->user);
         return response()->json($expenses);
     }

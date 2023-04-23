@@ -1,66 +1,315 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# CRUD Despesas
 
-## About Laravel
+Projeto tem objetivo consiste em um CRUD (CREATE, READ, UPDAtE, DELETE) de despesas, tendo algumas regras:
+- O sistema é acessivel somente para usuários registrados e autenticados.
+- Qualquer usuário pode registrar uma despesa para qualquer outro usuario existente, enviando seu respectivo id.
+- Um usuário só pode ler/atualizar/apagar uma despesa existente e referenciado ao seu id de usuário.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Instalação
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Faça o clone do projeto em uma pasta de sua preferência
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+  git clone git@github.com:dieg0rood/crud-despesas.git
+```
 
-## Learning Laravel
+Acessando o diretório raiz do projeto faça a instalação das dependências do projeto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+  composer install
+```    
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Copie o arquivo env
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+  cp .env.example .env
+```
 
-## Laravel Sponsors
+Na raiz do projeto, gere o banco de dados com suas migrations, segue exemplo utilizando o sail
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+  alias sail="vendor/bin/sail"
+  sail up -d 
+  sail artisan migrate
+```
 
-### Premium Partners
+Para utilizar o servidor do laravel
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+  sail artisan serve
+```  
 
-## Contributing
+Após isso a API já estará disponível para consulta
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+*Obs.: Utilizando o sail, a porta para uso será a 80, mesmo que no terminal aponte a porta 8000.
 
-## Code of Conduct
+```http
+  http://localhost:80/
+```
+## Rodando os testes
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Para rodar os testes, rode os seguintes comandos na raiz do projeto
+*Comandos para usar somente se o sail ainda não estiver Up
 
-## Security Vulnerabilities
+```bash  
+  *alias sail="vendor/bin/sail"
+  *sail up -d 
+  sail test
+```
+# Documentação da API
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Registro e Autenticação
 
-## License
+### Cadastrar usuário
+```http
+  POST /api/auth/register
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
++ Request
+
+            {
+                "name": "Name For Test",
+                "email": "emailfortest@gmail.com",
+                "password": "123456",
+                "password_confirmation": "123456"
+            } 
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `name`      | `string` | **Obrigatório**. Nome do usuário - Maximo 255 caracteres |
+| `email`      | `string` | **Obrigatório**. E-mail do usuário - Deve ser único no sistema|
+| `password`      | `string` | **Obrigatório**. Senha do usuário - Minimo 8 caracteres |
+| `password_confirmation`      | `string` | **Obrigatório**. Confirmação da senha - Minimo 8 caracteres |
+
++ Response 200 OK
+
+            {
+                "data": {
+                    "user": {
+                        "name": "Name For Test",
+                        "email": "emailfortest@gmail.com",
+                        "updated_at": "2023-04-23T20:23:33.000000Z",
+                        "created_at": "2023-04-23T20:23:33.000000Z",
+                        "id": 11
+                    }
+                }
+            }
+
++ Response 500 Internal Server Error
+
+            {
+                "message": "Não foi possível cadastrar o usuário, tente novamente mais tarde!",
+            } 
+
+### Login (gerar token)
+```http
+  POST /api/auth/login
+```
+
++ Request
+
+            {
+                "name": "Name For Test",
+                "email": "emailfortest@gmail.com",
+                "password": "123456"
+            } 
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `email`      | `string` | **Obrigatório**. E-mail do usuário |
+| `password`      | `string` | **Obrigatório**. Senha do usuário |
+
++ Response 200 OK
+
+            {
+                "data": {
+                    "token": "6|R3fmyQkw442NoHcAQycSxif44rTat5Ay3mSWDvjc"
+                }
+            }  
+
++ Response 401 Unauthorized
+
+            {
+                "message": "Credenciais inválidas!",
+            } 
+
+### Logout (expirar token)
+```http
+  POST /api/auth/logout
+```
+
++ Headers
+
+            Authorization: Bearer [access_token]
+
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `authorization`      | `string` | **Obrigatório**. Access token gerado no login |
+
++ Response 204 No Content
+
+            {
+            } 
+
+## Expenses[/expenses]
+
+Para todas as requisições a seguir, deverá ser enviado um token válido:
++ Headers
+
+            Authorization: Bearer [access_token]
+
+### Listar despesa 
+
+```http
+  GET /api/expenses/${id}
+```
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `id`      | `string` | **Opcional**. Id da despesa (Caso não informado serão buscados todas as despesas do usuário autenticado.) |
+
++ Response 200 OK
+
+            {
+                "id": 28,
+                "description": "Teste 001",
+                "expense_date": "2013-11-12",
+                "user_id": 1,
+                "amount": "1222.33",
+                "created_at": "2023-04-23T19:31:01.000000Z",
+                "updated_at": "2023-04-23T19:31:01.000000Z"
+            }
+
++ Response 401 Unauthorized
+
+            {
+                "message": "Usuário não autorizado a realizar a ação!",
+            } 
+
++ Response 404 Not Found
+
+            {
+                "message": "Nenhuma despesa encontrada para o usuário nº ${id}",
+            }   
+
+### Cadastrar uma despesa
+
+```http
+  POST /api/expenses/
+```
+
++ Request
+
+            {
+                "user_id": 1,
+                "description": "Teste 005",
+                "expense_date": "2013-11-12",
+                "amount": "1222.33",
+            }
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `user_id`      | `int` | **Obrigatório**. Id de usuário registrado que terá a despesa vinculada |
+| `description`      | `string` | **Obrigatório**. Descrição da despesa - Limite 191 caracteres |
+| `expense_date`      | `date` | **Obrigatório**. Data da despesa - Formato YYYY-mm-dd (igual ou anterior a hoje) |
+| `amount`      | `decimal` | **Obrigatório**. Valor da despesa - Formato: inteiro ou com duas casas decimais ex: 999.99|
+
+
++ Response 201 Created
+
+            {
+                "id": 28,
+                "description": "Teste 005",
+                "expense_date": "2013-11-12",
+                "user_id": 1,
+                "amount": "1222.33",
+                "created_at": "2023-04-23T19:31:01.000000Z",
+                "updated_at": "2023-04-23T19:31:01.000000Z"
+            }
+
++ Response 401 Unauthorized
+
+            {
+                "message": "Usuário não autorizado a realizar a ação!",
+            } 
+
++ Response 500 Internal Server Error
+
+            {
+                "message": "Não foi possível criar a despesa, tente novamente mais tarde!",
+            } 
+### Atualizar uma despesa
+
+```http
+  PUT /api/expenses/${id}
+```
+
++ Request
+
+            {
+                "description": "Teste 066",
+                "expense_date": "2013-10-12",
+                "amount": "1555.33",
+            }
+
++ Response 401 Unauthorized
+
+            {
+                "message": "Usuário não autorizado a realizar a ação!",
+            } 
+
++ Response 500 Internal Server Error
+
+            {
+                "message": "Nenhuma despesa encontrada para o usuário nº 1",
+            }              
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `id`      | `string` | **Obrigatório**. Id da despesa |
+| `description`      | `string` | **Opcional**. Descrição da despesa - Limite 191 caracteres |
+| `expense_date`      | `date` | **Opcional**. Data da despesa - Formato YYYY-mm-dd (igual ou anterior a hoje) |
+| `amount`      | `decimal` | **Opcional**. Valor da despesa - Formato: inteiro ou com duas casas decimais ex: 999.99|
+
+
++ Response
+
+            {
+                "id": 28,
+                "description": "Teste 005",
+                "expense_date": "2013-10-12",
+                "user_id": 1,
+                "amount": "1555.33",
+                "created_at": "2023-04-23T19:31:01.000000Z",
+                "updated_at": "2023-04-23T19:31:01.000000Z"
+            }     
+
+### Deletar uma despesa
+
+```http
+  DELETE /api/expenses/${id}
+```
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `id`      | `string` | **Obrigatório**. Id da despesa |
+
+
++ Response 204 No Content
+
+            {
+            }   
+                              
++ Response 401 Unauthorized
+
+            {
+                "message": "Usuário não autorizado a realizar a ação!",
+            } 
+
++ Response 500 Internal Server Error
+
+            {
+                "message": "A Despesa nº ${id} não pode ser excluída",
+            }     

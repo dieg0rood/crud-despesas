@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Http\Requests;
+
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateExpenseRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
-    {   
+    {
         return true;
     }
 
@@ -21,9 +22,8 @@ class UpdateExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description' => ['string', 'max:191'],
-            'expense_date' => ['date_format:Y-m-d', 'before_or_equal:today'],
-            'amount' => [ 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'min:0'],
+            'email' => ['required', 'string', 'email', 'exists:users,email'],
+            'password' => ['required', 'string'],
         ];
     }
 }
