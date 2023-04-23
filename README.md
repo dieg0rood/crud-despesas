@@ -71,8 +71,8 @@ Para rodar os testes, rode os seguintes comandos na raiz do projeto
             {
                 "name": "Name For Test",
                 "email": "emailfortest@gmail.com",
-                "password": "123456",
-                "password_confirmation": "123456"
+                "password": "12345678",
+                "password_confirmation": "12345678"
             } 
 
 | Parâmetro   | Tipo       | Descrição                                   |
