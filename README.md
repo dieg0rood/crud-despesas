@@ -25,6 +25,7 @@ Copie o arquivo env
 ```bash
   cp .env.example .env
 ```
+Obs.:Nesse momento, é importante que você configure manualmente os dados de SMTP para que o envio de e-mail funcione corretamente!
 
 Na raiz do projeto, gere o banco de dados com suas migrations, segue exemplo utilizando o sail
 
@@ -57,6 +58,17 @@ Para rodar os testes, rode os seguintes comandos na raiz do projeto
   *sail up -d 
   sail test
 ```
+## Rodando a fila
+
+Para rodar a fila, rode os seguintes comandos na raiz do projeto
+*Comandos para usar somente se o sail ainda não estiver Up
+
+```bash  
+  *alias sail="vendor/bin/sail"
+  *sail up -d 
+  sail artisan queue:work
+```
+
 # Documentação da API
 
 ## Registro e Autenticação
