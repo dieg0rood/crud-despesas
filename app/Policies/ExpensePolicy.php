@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use App\Models\Expense;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Exceptions\PolicyException;
 
 class ExpensePolicy
 {
@@ -22,7 +23,10 @@ class ExpensePolicy
      */
     public function view(User $user, Expense $expense): bool
     {
-        return $user->id === $expense->user_id;
+        if ($user->id !== $expense->user_id) {
+            throw new PolicyException();
+        }
+        return true;
     }
 
     /**
@@ -38,7 +42,10 @@ class ExpensePolicy
      */
     public function update(User $user, Expense $expense): bool
     {
-        return $user->id === $expense->user_id;
+        if ($user->id !== $expense->user_id) {
+            throw new PolicyException();
+        }
+        return true;
     }
 
     /**
@@ -46,7 +53,10 @@ class ExpensePolicy
      */
     public function delete(User $user, Expense $expense): bool
     {
-        return $user->id === $expense->user_id;
+        if ($user->id !== $expense->user_id) {
+            throw new PolicyException();
+        }
+        return true;
     }
 
     /**
@@ -54,7 +64,10 @@ class ExpensePolicy
      */
     public function restore(User $user, Expense $expense): bool
     {
-        return $user->id === $expense->user_id;
+        if ($user->id !== $expense->user_id) {
+            throw new PolicyException();
+        }
+        return true;
     }
 
     /**
@@ -62,6 +75,9 @@ class ExpensePolicy
      */
     public function forceDelete(User $user, Expense $expense): bool
     {
-        return $user->id === $expense->user_id;
+        if ($user->id === $expense->user_id) {
+            throw new PolicyException();
+        }
+        return true;
     }
 }

@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Auth\Api;
 
+use App\Exceptions\User\CannotLoginUserException;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 
 class LoginController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        //ToDo validar request
         $credentials = $request->only('email', 'password');
 
         if (!auth()->attempt($credentials))
-            abort(401, 'Invalid Credentials');
+            throw new CannotLoginUserException();
 
         $token = auth()->user()->createToken('auth_token');
 
