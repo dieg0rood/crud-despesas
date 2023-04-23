@@ -73,4 +73,5 @@ class ExpenseController extends Controller
 
         return response()->json('Successfully removed expense.',204);
     }
+    
 }
