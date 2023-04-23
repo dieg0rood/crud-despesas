@@ -9,68 +9,60 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use App\Models\User;
 use App\Notifications\ExpenseNotify;
 use Illuminate\Support\Facades\Notification;
+use App\Services\ExpenseService;
+use Illuminate\Http\JsonResponse;
 
 class ExpenseController extends Controller
 {
+    public function __construct(
+        protected ExpenseService $service, 
+        protected User $user, 
+        protected Expense $expense){}
     /**
      * Display a listing of the resource.
      */
-    public function index(Authenticatable $user)
+    public function index(Authenticatable $user): JsonResponse
     {
-        $user = User::find($user->id);
-        $expenses = $user->expenses;
-        
-        if ($expenses->isEmpty())
-            abort(404, 'No expenses found.');
-            
+        $expenses = $this->service->index($user, $this->user);
         return response()->json($expenses);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreExpenseRequest $request)
+    public function store(StoreExpenseRequest $request): JsonResponse
     {
-        $expense = Expense::create($request->validated());
-
-        if (!$expense)
-            abort(500, 'Error to create a new expense.');
-
+        $expense = $this->service->store($request->validated(), $this->expense);
         Notification::send($expense->user, new ExpenseNotify($expense));
-
-        return response()->json($expense, 201);
+        return response()->json($expense->makeHidden('user'), 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Expense $expense)
+    public function show(Expense $expense): JsonResponse
     {
-        $this->authorize('view', $expense);  
-        return response()->json($expense,200);
+        $this->authorize('view', $expense);
+        return response()->json($expense, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateExpenseRequest $request, Expense $expense)
+    public function update(UpdateExpenseRequest $request, Expense $expense): JsonResponse
     {
-        if (!$expense->update($request->validated()))
-            abort(500, 'Unable to update expense.');
-
-        return response()->json($expense,200);
+        $this->authorize('update', $expense);
+        $expense = $this->service->update($request->validated(), $expense);
+        return response()->json($expense, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Expense $expense)
+    public function destroy(Expense $expense): JsonResponse
     {
         $this->authorize('delete', $expense);
-
-        if (!$expense->delete())
-            abort(500, 'Unable to remove expense.');
-
-        return response()->json('Successfully removed expense.',204);
+        $this->service->delete($expense);
+        return response()->json('Successfully removed expense.', 204);
     }
 }
