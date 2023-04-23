@@ -6,8 +6,9 @@ use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Models\Expense;
 use Illuminate\Contracts\Auth\Authenticatable;
-use App\Helpers\Formatter;
 use App\Models\User;
+use App\Notifications\ExpenseNotify;
+use Illuminate\Support\Facades\Notification;
 
 class ExpenseController extends Controller
 {
@@ -28,19 +29,14 @@ class ExpenseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreExpenseRequest $request, Authenticatable $user)
+    public function store(StoreExpenseRequest $request)
     {
-        $request = $request->validated();
-
-        $expense = Expense::create([
-            'description' => $request['description'],
-            'expense_date' => Formatter::formatToYmd($request['expense_date']),
-            'user_id' => $user->id,
-            'amount' => $request['amount'],
-        ]);
+        $expense = Expense::create($request->validated());
 
         if (!$expense)
             abort(500, 'Error to create a new expense.');
+
+        Notification::send($expense->user, new ExpenseNotify($expense));
 
         return response()->json($expense, 201);
     }
@@ -59,10 +55,7 @@ class ExpenseController extends Controller
      */
     public function update(UpdateExpenseRequest $request, Expense $expense)
     {
-        $request = $request->validated();
-        $this->authorize('update', $request);
-
-        if (!$expense = $expense->update($request->validated()))
+        if (!$expense->update($request->validated()))
             abort(500, 'Unable to update expense.');
 
         return response()->json($expense,200);
@@ -75,7 +68,7 @@ class ExpenseController extends Controller
     {
         $this->authorize('delete', $expense);
 
-        if (!$expense = $expense->delete())
+        if (!$expense->delete())
             abort(500, 'Unable to remove expense.');
 
         return response()->json('Successfully removed expense.',204);
