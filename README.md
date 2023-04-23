@@ -1,7 +1,7 @@
 
 # CRUD Despesas
 
-Projeto tem objetivo consiste em um CRUD (CREATE, READ, UPDAtE, DELETE) de despesas, tendo algumas regras:
+Projeto tem objetivo consiste em um CRUD (CREATE, READ, UPDATE, DELETE) de despesas, tendo algumas regras:
 - O sistema é acessivel somente para usuários registrados e autenticados.
 - Qualquer usuário pode registrar uma despesa para qualquer outro usuario existente, enviando seu respectivo id.
 - Um usuário só pode ler/atualizar/apagar uma despesa existente e referenciado ao seu id de usuário.
